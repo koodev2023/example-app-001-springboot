@@ -19,9 +19,9 @@ public class MoviesApplication {
         return """
                 Hello world, this is my first Spring Boot application.
                 Below are apis you can try.
-                /
-                /api/v1/movies
-                /api/v1/movies/{imdbId}
+                / (Home)
+                /api/v1/movies (Get All Movies)
+                /api/v1/movies/{imdbId} (Get Single Movie by imdbId)
                 """;
 
     }
