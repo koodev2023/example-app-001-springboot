@@ -7,11 +7,11 @@
 # EXPOSE 8080
 # ENTRYPOINT ["java","-jar","movies.jar"]
 
-FROM maven:3.9.3-eclipse-temurin-21 AS build
+FROM jelastic/maven:3.9.5-openjdk-21 AS build
 COPY . .
 RUN mvn clean package -DskipTests
 
-FROM eclipse-temurin:21-jdk-jammy
+FROM openjdk:21-jdk-oracle
 COPY --from=build /target/movies-0.0.1-SNAPSHOT.jar movies.jar
 EXPOSE 8080
 ENTRYPOINT ["java","-jar","movies.jar"]
