@@ -2,26 +2,27 @@ package com.example.movies.service;
 
 import com.example.movies.model.Movie;
 import com.example.movies.model.Review;
+import com.example.movies.repository.MovieRepository;
 import com.example.movies.repository.ReviewRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ReviewService {
-    @Autowired
-    private ReviewRepository reviewRepository;
 
-    @Autowired
-    private MongoTemplate mongoTemplate;
+    private final MovieRepository movieRepository;
+    private final ReviewRepository reviewRepository;
+
+    public ReviewService(MovieRepository movieRepository, ReviewRepository reviewRepository) {
+        this.movieRepository = movieRepository;
+        this.reviewRepository = reviewRepository;
+    }
 
     public Review createReview(String reviewBody, String imdbId) {
-        Review review = new Review(reviewBody);
-        reviewRepository.insert(review);
+        Movie movie = movieRepository.findMovieByImdbId(imdbId)
+                .orElseThrow(() -> new IllegalArgumentException("Movie not found with imdbId: " + imdbId));
 
-        mongoTemplate.update(Movie.class).matching(Criteria.where("imdbId").is(imdbId)).apply(new Update().push("reviewIds").value(review)).first();
+        Review review = new Review(reviewBody);
+        review = reviewRepository.save(review);
 
         return review;
     }
