@@ -7,7 +7,7 @@
 # EXPOSE 8080
 # ENTRYPOINT ["java","-jar","movies.jar"]
 
-FROM maven:3.9.3-eclipse-temurin-21 AS build # Use a Maven image with JDK 21
+FROM maven:3.9.3-eclipse-temurin-21 AS build
 COPY . .
 RUN mvn clean package -DskipTests
 
