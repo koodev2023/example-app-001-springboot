@@ -6,6 +6,10 @@ import com.example.movies.repository.MovieRepository;
 import com.example.movies.repository.ReviewRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 @Service
 public class ReviewService {
 
@@ -18,11 +22,22 @@ public class ReviewService {
     }
 
     public Review createReview(String reviewBody, String imdbId) {
-        Movie movie = movieRepository.findMovieByImdbId(imdbId)
-                .orElseThrow(() -> new IllegalArgumentException("Movie not found with imdbId: " + imdbId));
+        Optional<Movie> movieOptional = movieRepository.findMovieByImdbId(imdbId);
+
+        Movie movie = movieOptional.orElseThrow(() -> new IllegalArgumentException("Movie not found with imdbId: " + imdbId));
 
         Review review = new Review(reviewBody);
         review = reviewRepository.save(review);
+
+        // Ensure reviewIds is initialized to avoid NullPointerException
+        List<Review> reviewIds = movie.getReviewIds();
+        if (reviewIds == null) {
+            reviewIds = new ArrayList<>();
+            movie.setReviewIds(reviewIds);
+        }
+
+        reviewIds.add(review);
+        movieRepository.save(movie);
 
         return review;
     }
